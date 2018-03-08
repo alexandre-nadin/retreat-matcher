@@ -13,41 +13,82 @@
 
   </head>
 
-  <body onload="fetchIssues()">
+  <body onload="initBody  ()">
 
-    <span role="presentation">
-      Choose an author from the list (hint: you can use the text field to search faster)
-    </span>
-
-
-    <div class="output_wrapper">
-      <div class="out_prompt_overlay prompt" title="click to scroll output; double click to hide"></div>
-      <div class="output">
-        <!-- <div class="output_area">
-          <div class="prompt"></div>
-          <div class="output_subarea jupyter-widgets-view">
-            <div class="p-Widget jupyter-widgets widget-inline-hbox widget-text" style="width: 80%;"> -->
-              <input id="input-name" placeholder="Start writing a name..." type="text">
-            <!-- </div>
-          </div>
-        </div> -->
-        <div class="output_area">
-          <div class="prompt"></div>
-          <div class="output_subarea jupyter-widgets-view">
-            <div class="p-Widget jupyter-widgets widget-inline-hbox widget-select" style="width: 80%;">
-              <label class="widget-label" style="display: none;" title="" for="a17f4c93-9ae6-4d57-a610-10c28ec3bc59"></label>
-              <select id="a17f4c93-9ae6-4d57-a610-10c28ec3bc59" size="5">
-                <option data-value="ALEXANDRE%20NADIN" value="ALEXANDRE NADIN">
-                  ALEXANDRE&nbsp;NADIN
-                </option>
-                <option data-value="ALEXANDRE%20P%20BENECHET" value="ALEXANDRE P BENECHET">
-                  ALEXANDRE&nbsp;P&nbsp;BENECHET
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
+    <div id="div-inputs" class="">
+      <div id="text-name" class="">
+        <span role="presentation">
+          Choose an author from the list (hint: you can use the text field to search faster)
+        </span>
       </div>
+
+      <div class="">
+        <input id="input-name" placeholder="Start writing a name..." type="text">
+      </div>
+
+        <select id="selector-name" size="5">
+          <option data-value="ALEXANDRE%20NADIN" value="ALEXANDRE NADIN">
+            ALEXANDRE&nbsp;NADIN
+          </option>
+          <option data-value="ALEXANDRE%20P%20BENECHET" value="ALEXANDRE P BENECHET">
+            ALEXANDRE&nbsp;P&nbsp;BENECHET
+          </option>
+        </select>
+
+        <div id="text-degree" class="">
+          <span role="presentation">
+            Select a degree of separation on the collaboration graph (No path restricts results to authors that cannot be connected on the collaboration graph)
+          </span>
+        </div>
+
+        <select id="selector-degree" size="5">
+          <option data-value="1" value="1">1</option>
+          <option data-value="2" value="2">2</option>
+          <option data-value="3" value="3">3</option>
+          <option data-value="4" value="4">4</option>
+          <option data-value="5" value="5">5</option>
+          <option data-value="6" value="6">6</option>
+          <option data-value="7" value="7">7</option>
+          <option data-value="8" value="8">8</option>
+          <option data-value="9" value="9">9</option>
+          <option data-value="10" value="10">10</option>
+          <option data-value="No%20path" value="No path">No&nbsp;path</option>
+        </select>
+
+      </div>
+
+      <div id="div-outputs" class="">
+          <p>
+            This is the list of the top 10 authors ranked by similarity of topics in presented abstracts
+          </p>
+        <div id="text-output" class="">
+          <p>Results for ADELE ULISSE</p>
+        </div>
+
+        <table style="width:100%">
+          <tbody>
+            <tr>
+             <th>Author</th>
+             <th>Score</th>
+           </tr>
+           <tr>
+             <td>RAFFAELLA MOLTENI</td>
+             <td align="right">0.732</td>
+           </tr>
+           <tr>
+             <td>MAURIZIO D'ANTONIO</td>
+             <td align="right">0.706</td>
+           </tr>
+           <tr>
+             <td>THIERRY TOUVIER</td>
+             <td align="right">0.704</td>
+           </tr>
+         </tbody>
+       </table>
+
+      </div>
+
+
     </div>
     <script src="main.js"></script>
 </body></html>
