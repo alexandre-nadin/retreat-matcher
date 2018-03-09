@@ -18,7 +18,7 @@ const NAME_FILTER = APP_CONTAINER
     .attr("id", "coordinates")
     .attr("type", "text")
     .attr("placeholder", "Start writing a name...")
-    .on("keyup", updateNameFilter)
+    .on("keyup", filterSelectorNames)
 
 // ----------------------
 // Input Div
@@ -40,7 +40,6 @@ const NAME_SELECTOR = DIV_INPUTS
     .attr('class', 'select')
     .attr('size', '5')
     .on('change', selectName)
-resetSelectors(NAME_SELECTOR, AUTHOR_NAMES)
 
 const DEGREE_TEXT = DIV_INPUTS
   .append("p")
@@ -59,7 +58,6 @@ const DEGREE_SELECTOR = DIV_INPUTS
     .attr('class', 'select')
     .attr('size', '5')
     .on('change', selectDegree)
-resetSelectors(DEGREE_SELECTOR, DEGREE_LIST)
 
 // ----------------------
 // Output Div
@@ -73,19 +71,41 @@ const OUTPUT_TEXT = DIV_OUTPUTS
   .append("p")
     .attr("id", "output-text")
     .attr("class", "")
-    .html("This is the list of the top 10 authors ranked by similarity of topics in presented abstracts"
-         + "<br/>"
-         + "Results for ADELE ULISSE"
-    )
+
+function updateOutputTextName(name) {
+  OUTPUT_TEXT.html("This is the list of the top 10 authors ranked by similarity of topics in presented abstracts"
+       + "<br/>"
+       + "Results for <b>"
+       + name
+       + "</b>"
+     )
+}
 
 const OUTPUT_TABLE_DIV= DIV_OUTPUTS
   .append("div")
     .attr("id", "output-table-div")
     .attr("class", "")
 
+
 // -----------------
 // Functions
 // -----------------
+function init() {
+  resetSelector(NAME_SELECTOR, AUTHOR_NAMES)
+  resetSelector(DEGREE_SELECTOR, DEGREE_LIST)
+  update()
+}
+
+function update() {
+  let nameFilter = NAME_FILTER.property('value')
+  let nameSelection = NAME_SELECTOR.property('value')
+  let degreeSelected = DEGREE_SELECTOR.property('value');
+  [  'nameFilter', 'nameSelection', 'degreeSelected' ]
+    .forEach(x => { if (eval(x) && eval(x).length) console.log(`%s: %s`, x, eval(x)); })
+
+  updateTopTable(nameSelection)
+}
+
 function tabulateDataColumnsDomId(data, columns, domId) {
   let table = domId.append('table')
   let thead = table.append('thead')
@@ -118,31 +138,27 @@ function tabulateDataColumnsDomId(data, columns, domId) {
   return table;
 }
 
-let tableTopSimilScoreData = function(name) {
+let updateTopTable = function(name) {
+  removeTagFromDom('table', OUTPUT_TABLE_DIV)
+  if (!name) return null
   let author_idx = AUTHOR_NAMES.indexOf(name)
-  return AUTHOR_SIMILARITIES.map(x => {
+  let similarities = AUTHOR_SIMILARITIES.map(x => {
         return {'author': x[0], 'score': x[author_idx]}
       })
+  tabulateDataColumnsDomId(
+    similarities,
+    Object.keys(similarities[0]),
+    OUTPUT_TABLE_DIV
+  )
 }
-
-tabulateDataColumnsDomId(
-  tableTopSimilScoreData("ANNA GANDAGLIA"),
-  ['author', 'score'],
-  OUTPUT_TABLE_DIV
-)
 
 // -------------------
-function selectDegree() {
-  // console.log("Selected data: ", DEGREE_SELECTOR.options[DEGREE_SELECTOR.selectedIndex]);
-}
+function selectDegree() { update() }
+function selectName() { update() }
 
-function selectName(data) {
-  console.log("Selected data: ", data);
-}
-
-function resetSelectors(selector, list) {
+function resetSelector(selector, list) {
   // Remove options and add new ones from list
-  removeSelectorOptions(selector)
+  removeTagFromDom('option', selector)
   selector.selectAll('option')
     .data(list)
     .enter()
@@ -151,23 +167,16 @@ function resetSelectors(selector, list) {
   return selector
 }
 
-function removeSelectorOptions(selector) {
-  return removeTagFromDom('option', selector)
-  // selector.selectAll('option').remove()
-  // return selector
-}
-
 function removeTagFromDom(tag, dom) {
   dom.selectAll(tag).remove()
   return dom
 }
 
-function updateNameFilter() {
-  console.log("[Update Filter] ", NAME_FILTER.property('value'));
-  console.log("");
-}
+function filterSelectorNames() { update() }
 
 function initBody() {
   console.log("[initBody]");
   console.log("app-container: ");
 }
+
+init()
