@@ -13,79 +13,9 @@
 
   </head>
 
-  <body onload="initBody()">
-
-    <div id="app-container" width="1366" height="768"></div>
-
-    <div id="div-inputs" class="">
-    
-
-        <select id="selector-name" size="5">
-          <option data-value="ALEXANDRE%20NADIN" value="ALEXANDRE NADIN">
-            ALEXANDRE&nbsp;NADIN
-          </option>
-          <option data-value="ALEXANDRE%20P%20BENECHET" value="ALEXANDRE P BENECHET">
-            ALEXANDRE&nbsp;P&nbsp;BENECHET
-          </option>
-        </select>
-
-        <div id="text-degree" class="">
-          <span role="presentation">
-            Select a degree of separation on the collaboration graph (No path restricts results to authors that cannot be connected on the collaboration graph)
-          </span>
-        </div>
-
-        <select id="selector-degree" size="5">
-          <option data-value="1" value="1">1</option>
-          <option data-value="2" value="2">2</option>
-          <option data-value="3" value="3">3</option>
-          <option data-value="4" value="4">4</option>
-          <option data-value="5" value="5">5</option>
-          <option data-value="6" value="6">6</option>
-          <option data-value="7" value="7">7</option>
-          <option data-value="8" value="8">8</option>
-          <option data-value="9" value="9">9</option>
-          <option data-value="10" value="10">10</option>
-          <option data-value="No%20path" value="No path">No&nbsp;path</option>
-        </select>
-
-      </div>
-
-      <div id="div-outputs" class="">
-          <p>
-            This is the list of the top 10 authors ranked by similarity of topics in presented abstracts
-          </p>
-        <div id="text-output" class="">
-          <p>Results for ADELE ULISSE</p>
-        </div>
-
-        <table style="width:100%">
-          <tbody>
-            <tr>
-             <th>Author</th>
-             <th>Score</th>
-           </tr>
-           <tr>
-             <td>RAFFAELLA MOLTENI</td>
-             <td align="right">0.732</td>
-           </tr>
-           <tr>
-             <td>MAURIZIO D'ANTONIO</td>
-             <td align="right">0.706</td>
-           </tr>
-           <tr>
-             <td>THIERRY TOUVIER</td>
-             <td align="right">0.704</td>
-           </tr>
-         </tbody>
-       </table>
-
-      </div>
-
-
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
-    <script src="js/main.js"></script>
-
+  <!-- <body onload="initBody()"> -->
+  <body>
+    <div id="app-container" class=""></div>
+    <script type="text/javascript" src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/main.js"></script>
 </body></html>
