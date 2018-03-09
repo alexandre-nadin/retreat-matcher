@@ -50,7 +50,7 @@ const NAME_SELECTOR = DIV_INPUTS
     .on('change', selectName)
 
 const DEGREE_PARAMS = {
-  'defaultValue': 1,
+  'defaultValue': 3,
   'maxValue': 10,
   'nopathValue': 1000,
   'nopathStr': 'No path'
@@ -138,14 +138,29 @@ function filterSelectorNames() { update() }
 function selectDegree() { update() }
 function selectName() { update() }
 
+let nameCurrent = undefined
+let degreeCurrent = undefined
+let nameCurrentFilter = undefined
 function updateInputs(params) {
-  updateNameSelector(NAME_SELECTOR, AUTHOR_NAMES)
-  updateNameSelector(DEGREE_SELECTOR, DEGREE_LIST)
+  updateNameSelector(params)
+  updateDegreeSelector(params)
+ }
+
+function updateNameSelector(params) {
+  if (nameCurrent === undefined) {
+    console.log("update name list");
+    nameCurrent = params.nameSelection
+    updateSelector(NAME_SELECTOR, AUTHOR_NAMES)
+  }
 }
 
-function updateNameSelector(nameFilter) {
-  return
+function updateDegreeSelector(params) {
+  if (degreeCurrent === undefined) {
+    degreeCurrent = params.degreeSelection
+    updateSelector(DEGREE_SELECTOR, DEGREE_LIST)
+  }
 }
+
 
 // -----------------
 // Output Functions
@@ -232,8 +247,7 @@ function updateTopTable(params) {
 }
 
 // -------------------
-
-function updateNameSelector(selector, list) {
+function updateSelector(selector, list) {
   // Remove options and add new ones from list
   removeTagFromDom('option', selector)
   selector.selectAll('option')
