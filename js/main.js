@@ -1,4 +1,5 @@
 const BACKSPACE_KEY = 8;
+const TOP_AUTHORS = 10
 
 const APP_CONTAINER = d3.select("#app-container")
 
@@ -48,16 +49,22 @@ const NAME_SELECTOR = DIV_INPUTS
     .attr('size', '5')
     .on('change', selectName)
 
+const DEGREE_PARAMS = {
+  'defaultValue': 1,
+  'maxValue': 10,
+  'nopathValue': 1000,
+  'nopathStr': 'No path'
+}
+
+const DEGREE_LIST = Array
+  .from(Array(10).keys()).map(x => ++x).map(String)
+  .concat(['No path'])
+
 const DEGREE_TEXT = DIV_INPUTS
   .append("p")
     .attr("id", "degree-text")
     .attr("class", "")
     .html("Select a degree of separation on the collaboration graph. No path restricts results to authors that cannot be connected on the collaboration graph")
-
-const DEGREE_MAX = 10
-const DEGREE_LIST = Array
-  .from(Array(10).keys()).map(x => ++x).map(String)
-  .concat(['No path'])
 
 const DEGREE_SELECTOR = DIV_INPUTS
   .append("select")
@@ -89,18 +96,35 @@ const OUTPUT_TABLE_DIV= DIV_OUTPUTS
 // Init / Update / General Functions
 // ------------------------------------
 function update() {
-  let nameFilter = NAME_FILTER.property('value')
-  let nameSelection = NAME_SELECTOR.property('value')
-  let degreeSelected = DEGREE_SELECTOR.property('value');
-  [  'nameFilter', 'nameSelection', 'degreeSelected' ]
-  .forEach(x => { if (eval(x) && eval(x).length) console.log(`%s: %s`, x, eval(x)); })
-  updateInputs(nameFilter)
-  updateOutputs(nameSelection)
+  let params = getInputParameters()
+  console.log("params: ", params);
+  updateInputs(params)
+  updateOutputs(params)
 }
 
-function filterSelectorNames() { update() }
-function selectDegree() { update() }
-function selectName() { update() }
+function getInputParameters() {
+  //
+  // Makes an object from all expected user inputs
+  //
+  return {
+    'nameFilter':  NAME_FILTER.property('value'),
+    'nameSelection': NAME_SELECTOR.property('value'),
+    'degreeSelection': formatDegree(DEGREE_SELECTOR.property('value'))
+    // 'degreeSelection': 1000
+  }
+}
+
+function formatDegree(degree) {
+  if (!degree) return DEGREE_PARAMS.defaultValue
+  if (degree === DEGREE_PARAMS.nopathStr) return DEGREE_PARAMS.nopathValue
+  return Number(degree)
+}
+
+function getDegreeString(degree) {
+  if (!degree) return ""
+  if (degree === DEGREE_PARAMS.nopathValue) degree = DEGREE_PARAMS.nopathStr
+  return  " (" + degree + " sep. degrees)"
+}
 
 function removeTagFromDom(tag, dom) {
   dom.selectAll(tag).remove()
@@ -110,8 +134,11 @@ function removeTagFromDom(tag, dom) {
 // -----------------
 // Input Functions
 // -----------------
-function updateInputs(nameFilter) {
-  // updateNameSelector(nameFilter)
+function filterSelectorNames() { update() }
+function selectDegree() { update() }
+function selectName() { update() }
+
+function updateInputs(params) {
   updateNameSelector(NAME_SELECTOR, AUTHOR_NAMES)
   updateNameSelector(DEGREE_SELECTOR, DEGREE_LIST)
 }
@@ -123,9 +150,9 @@ function updateNameSelector(nameFilter) {
 // -----------------
 // Output Functions
 // -----------------
-function updateOutputs(name) {
-  updateOutputTextName(name)
-  updateTopTable(name)
+function updateOutputs(params) {
+  updateOutputTextName(params)
+  updateTopTable(params)
 }
 
 function tabulateDataColumnsDomId(data, columns, domId) {
@@ -160,36 +187,46 @@ function tabulateDataColumnsDomId(data, columns, domId) {
   return table;
 }
 
-function updateOutputTextName(name) {
+function updateOutputTextName(params) {
   removeTagFromDom('p', OUTPUT_TEXT_DIV)
-  if (!name || !name.length) return null
+  if (!params.nameSelection || !params.nameSelection.length) return null
   OUTPUT_TEXT_DIV
     .append('p')
-      .html("This is the list of the top 10 authors ranked by similarity of topics in presented abstracts"
+      .html("This is the list of the top "
+         + TOP_AUTHORS
+         + " authors ranked by similarity of topics in presented abstracts "
+         + getDegreeString(params.degreeSelection)
          + "<br/>"
          + "Results for <b>"
-         + name
+         + params.nameSelection
          + "</b>"
      )
 }
 
-function updateTopTable(name) {
+function updateTopTable(params) {
+  //
+  // Resets the top table.
+  // Gets similarity scores from authors of the specified degree of
+  // collaboration.
+  //
   removeTagFromDom('table', OUTPUT_TABLE_DIV)
-  if (!name) return null
-  let authorIdx = AUTHOR_NAMES.indexOf(name)
-  let similDegreeTable = AUTHOR_DEGREES
+  if (!params.nameSelection) return null
+  let authorIdx = AUTHOR_NAMES.indexOf(params.nameSelection)
+  let tableData = AUTHOR_DEGREES
     // Filter the degrees here
-    .filter(d => d[0] !== name)
+    .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
     .map(d => { return {
        'Author': d[0],
        'Score': AUTHOR_SIMILARITIES
          .find(s => s[0] === d[0])[authorIdx],
-       'Degree': d[authorIdx]}
-     })
+       'Degree': d[authorIdx]} ; })
+    .filter(x => x.Degree == params.degreeSelection)
+
+  if (!tableData.length) return;
   tabulateDataColumnsDomId(
-    similDegreeTable,
-    Object.keys(similDegreeTable[0]),
+    tableData,
+    Object.keys(tableData[0]),
     OUTPUT_TABLE_DIV
   )
 }
