@@ -7,6 +7,13 @@ const AUTHOR_NAMES = ",SYLVAIN M MUKENGE,ANNA GANDAGLIA,DAVIDE LAZZERONI,GABRIEL
   // .filter(x => x && x.length)
 
 const AUTHOR_SIMILARITIES = [
+  "SYLVAIN M MUKENGE,1.0,0.5067098125585289,0.6479705859654777,0.5057978857342632",
+  "ANNA GANDAGLIA,0.5067098125585289,1.0,0.5983803473561269,0.5031240507516532",
+  "DAVIDE LAZZERONI,0.6479705859654777,0.5983803473561269,1.0,0.5029147075370226",
+  "GABRIELLA DI GIOVINE,0.5057978857342632,0.5031240507516532,0.5029147075370226,1.0"
+].map(x => x.split(','))
+
+const AUTHOR_DEGREES = [
   "SYLVAIN M MUKENGE,0,4,6,1000",
   "ANNA GANDAGLIA,4,0,6,1000",
   "DAVIDE LAZZERONI,6,6,0,1000",
@@ -169,13 +176,20 @@ function updateOutputTextName(name) {
 function updateTopTable(name) {
   removeTagFromDom('table', OUTPUT_TABLE_DIV)
   if (!name) return null
-  let author_idx = AUTHOR_NAMES.indexOf(name)
-  let similarities = AUTHOR_SIMILARITIES.map(x => {
-        return {'author': x[0], 'score': x[author_idx]}
-      })
+  let authorIdx = AUTHOR_NAMES.indexOf(name)
+  let similDegreeTable = AUTHOR_DEGREES
+    // Filter the degrees here
+    .filter(d => d[0] !== name)
+    // Map the Similarity Scores
+    .map(d => { return {
+       'Author': d[0],
+       'Score': AUTHOR_SIMILARITIES
+         .find(s => s[0] === d[0])[authorIdx],
+       'Degree': d[authorIdx]}
+     })
   tabulateDataColumnsDomId(
-    similarities,
-    Object.keys(similarities[0]),
+    similDegreeTable,
+    Object.keys(similDegreeTable[0]),
     OUTPUT_TABLE_DIV
   )
 }
