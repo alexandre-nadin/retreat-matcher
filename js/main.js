@@ -147,10 +147,14 @@ function updateInputs(params) {
  }
 
 function updateNameSelector(params) {
-  if (nameCurrent === undefined) {
+  if (nameCurrent === undefined || params.nameFilter !== nameCurrentFilter) {
     console.log("update name list");
     nameCurrent = params.nameSelection
-    updateSelector(NAME_SELECTOR, AUTHOR_NAMES)
+    nameCurrentFilter = params.nameFilter
+    updateSelector(NAME_SELECTOR,
+      AUTHOR_NAMES
+        .filter(x => x.toLowerCase()
+          .includes(params.nameFilter.toLowerCase()) ))
   }
 }
 
@@ -161,6 +165,16 @@ function updateDegreeSelector(params) {
   }
 }
 
+function updateSelector(selector, list) {
+  // Remove options and add new ones from list
+  removeTagFromDom('option', selector)
+  selector.selectAll('option')
+    .data(list)
+    .enter()
+    .append('option')
+    .text(x => x)
+  return selector
+}
 
 // -----------------
 // Output Functions
@@ -247,15 +261,4 @@ function updateTopTable(params) {
 }
 
 // -------------------
-function updateSelector(selector, list) {
-  // Remove options and add new ones from list
-  removeTagFromDom('option', selector)
-  selector.selectAll('option')
-    .data(list)
-    .enter()
-    .append('option')
-    .text(x => x)
-  return selector
-}
-
 update()
