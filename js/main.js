@@ -57,7 +57,6 @@ const APP_FOOTER = APP_CONTAINER
     .append('p')
       .html('&copy Copy-paste')
 
-
 // ----------------------
 // App Inputs
 // ----------------------
@@ -252,7 +251,10 @@ function updateTopTable(params) {
 }
 
 function tabulateDataColumnsDomId(data, columns, domId) {
-  let table = domId.append('table')
+  let table = domId
+    .append('table')
+    .attr('class', 'table table-bordered')
+
   let thead = table.append('thead')
   let	tbody = table.append('tbody');
 
