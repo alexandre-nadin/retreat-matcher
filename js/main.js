@@ -44,16 +44,16 @@ const APP_HEADER = APP_CONTAINER
 const APP_INPUTS = APP_CONTAINER
   .append("div")
     .attr("id", "input-div")
-    // .attr("class", "")
+    .attr('class', 'jumbotron')
 
 const APP_OUTPUTS = APP_CONTAINER
   .append("div")
     .attr("id", "output-div")
-    .attr("class", "")
+    .attr('class', 'jumbotron')
 
 const APP_FOOTER = APP_CONTAINER
   .append('div')
-    // .attr('class', 'footer')
+    .attr('class', 'footer')
     .append('p')
       .html('&copy Copy-paste')
 
@@ -111,12 +111,10 @@ const DEGREE_SELECTOR = APP_INPUTS
 const OUTPUT_TEXT_DIV = APP_OUTPUTS
   .append("div")
     .attr("id", "output-text-div")
-    .attr("class", "")
 
 const OUTPUT_TABLE_DIV= APP_OUTPUTS
   .append("div")
     .attr("id", "output-table-div")
-    .attr("class", "")
 
 
 // ------------------------------------
@@ -211,6 +209,48 @@ function updateOutputs(params) {
   updateTopTable(params)
 }
 
+function updateOutputTextName(params) {
+  removeTagFromDom('h6', OUTPUT_TEXT_DIV)
+  if (!params.nameSelection || !params.nameSelection.length) return null
+  OUTPUT_TEXT_DIV
+    .append('h6')
+      .html(""
+        + "Top " + TOP_AUTHORS + " results for <b>"
+        + "<b>" + params.nameSelection + "</b>"
+        + "<br/><small> authors ranked by similarity of topics in presented abstracts "
+        + getDegreeString(params.degreeSelection)
+        + "</small><br/>"
+     )
+}
+
+function updateTopTable(params) {
+  //
+  // Resets the top table.
+  // Gets similarity scores from authors of the specified degree of
+  // collaboration.
+  //
+  removeTagFromDom('table', OUTPUT_TABLE_DIV)
+  if (!params.nameSelection) return null
+  let authorIdx = AUTHOR_NAMES.indexOf(params.nameSelection)
+  let tableData = AUTHOR_DEGREES
+    // Filter the degrees here
+    .filter(d => d[0] !== params.nameSelection)
+    // Map the Similarity Scores
+    .map(d => { return {
+       'Author': d[0],
+       'Score': AUTHOR_SIMILARITIES
+         .find(s => s[0] === d[0])[authorIdx],
+       'Degree': d[authorIdx]} ; })
+    .filter(x => x.Degree == params.degreeSelection)
+
+  if (!tableData.length) return;
+  tabulateDataColumnsDomId(
+    tableData,
+    Object.keys(tableData[0]),
+    OUTPUT_TABLE_DIV
+  )
+}
+
 function tabulateDataColumnsDomId(data, columns, domId) {
   let table = domId.append('table')
   let thead = table.append('thead')
@@ -241,50 +281,6 @@ function tabulateDataColumnsDomId(data, columns, domId) {
       .text(x => x.value);
 
   return table;
-}
-
-function updateOutputTextName(params) {
-  removeTagFromDom('p', OUTPUT_TEXT_DIV)
-  if (!params.nameSelection || !params.nameSelection.length) return null
-  OUTPUT_TEXT_DIV
-    .append('p')
-      .html("This is the list of the top "
-         + TOP_AUTHORS
-         + " authors ranked by similarity of topics in presented abstracts "
-         + getDegreeString(params.degreeSelection)
-         + "<br/>"
-         + "Results for <b>"
-         + params.nameSelection
-         + "</b>"
-     )
-}
-
-function updateTopTable(params) {
-  //
-  // Resets the top table.
-  // Gets similarity scores from authors of the specified degree of
-  // collaboration.
-  //
-  removeTagFromDom('table', OUTPUT_TABLE_DIV)
-  if (!params.nameSelection) return null
-  let authorIdx = AUTHOR_NAMES.indexOf(params.nameSelection)
-  let tableData = AUTHOR_DEGREES
-    // Filter the degrees here
-    .filter(d => d[0] !== params.nameSelection)
-    // Map the Similarity Scores
-    .map(d => { return {
-       'Author': d[0],
-       'Score': AUTHOR_SIMILARITIES
-         .find(s => s[0] === d[0])[authorIdx],
-       'Degree': d[authorIdx]} ; })
-    .filter(x => x.Degree == params.degreeSelection)
-
-  if (!tableData.length) return;
-  tabulateDataColumnsDomId(
-    tableData,
-    Object.keys(tableData[0]),
-    OUTPUT_TABLE_DIV
-  )
 }
 
 // -------------------
