@@ -2,6 +2,7 @@
 // Application Data
 // ---------------------------------
 const BACKSPACE_KEY = 8;
+const TITLES_TAG = 'h4'
 const TOP_AUTHORS = 10
 const AUTHOR_NAMES = ",SYLVAIN M MUKENGE,ANNA GANDAGLIA,DAVIDE LAZZERONI,GABRIELLA DI GIOVINE"
   .split(',')
@@ -21,65 +22,6 @@ const AUTHOR_DEGREES = [
   "GABRIELLA DI GIOVINE,1000,1000,1000,0"
 ].map(x => x.split(','))
 
-
-// ---------------------------------
-// DOM Structure
-// ---------------------------------
-const HEADER_STR = "HSR Collaborations 2018"
-const APP_OWNER = "Babbonatale"
-const FOOTER_STR = "&copy Copy-paste"
-
-const APP_BODY = d3.select('body')
-const APP_CONTAINER = APP_BODY
-  .append('div')
-    .attr('class', 'container')
-    .attr('id', 'app-container')
-
-const APP_HEADER = APP_CONTAINER
-  .append('h1')
-    .html(HEADER_STR)
-    .append('small')
-      .html(" by " + APP_OWNER)
-
-const APP_INPUTS = APP_CONTAINER
-  .append("div")
-    .attr("id", "input-div")
-    .attr('class', 'jumbotron')
-
-const APP_OUTPUTS = APP_CONTAINER
-  .append("div")
-    .attr("id", "output-div")
-    .attr('class', 'jumbotron')
-
-const APP_FOOTER = APP_CONTAINER
-  .append('div')
-    .attr('class', 'footer')
-    .append('p')
-      .html('&copy Copy-paste')
-
-// ----------------------
-// App Inputs
-// ----------------------
-const NAME_FILTER = APP_INPUTS
-  .append("input")
-    .attr("id", "coordinates")
-    .attr("type", "text")
-    .attr("placeholder", "Start writing a name...")
-    .on("keyup", filterSelectorNames)
-
-const NAME_TEXT = APP_INPUTS
-  .append("p")
-    .attr("id", "name-text")
-    .attr("class", "")
-    .text("Choose an author from the list (hint: you can use the text field to search faster)")
-
-const NAME_SELECTOR = APP_INPUTS
-  .append("select")
-    .attr('id', 'name-selector')
-    .attr('class', 'select')
-    .attr('size', '5')
-    .on('change', selectName)
-
 const DEGREE_PARAMS = {
   'defaultValue': 3,
   'maxValue': 10,
@@ -91,16 +33,119 @@ const DEGREE_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
 
-const DEGREE_TEXT = APP_INPUTS
-  .append("p")
-    .attr("id", "degree-text")
-    .attr("class", "")
-    .html("Select a degree of separation on the collaboration graph. No path restricts results to authors that cannot be connected on the collaboration graph")
 
-const DEGREE_SELECTOR = APP_INPUTS
+// ---------------------------------
+// DOM Structure
+// ---------------------------------
+const HEADER_STR = "Collaborators HSR2018"
+const APP_OWNER = "Babbonatale"
+const FOOTER_STR = "&copy Copy-paste"
+
+const APP_BODY = d3.select('body')
+const APP_CONTAINER = APP_BODY
+  .append('div')
+    .attr('class', 'container')
+
+const APP_HEADER = APP_CONTAINER
+  .append('h1')
+    .html(HEADER_STR)
+    .append('small')
+      .html(" by " + APP_OWNER)
+
+const APP_INPUTS = APP_CONTAINER
+  .append("div")
+    .attr('class', 'jumbotron')
+
+const APP_OUTPUTS = APP_CONTAINER
+  .append("div")
+    .attr("id", "output-div")
+
+const APP_FOOTER = APP_CONTAINER
+  .append('div')
+    .attr('class', 'footer')
+    .append('p')
+      .html('&copy Copy-paste')
+
+// ----------------------
+// App Inputs
+// ----------------------
+
+// Names
+const NAME_SECTION = APP_INPUTS
+  .append('div')
+
+NAME_SECTION
+  .append(TITLES_TAG)
+    .html("Choose an author of interest")
+
+const NAME_FORM = NAME_SECTION
+  .append('form')
+
+// Filter Name Form
+const NAME_FORM_FILTER = NAME_FORM
+  .append('div')
+    .attr('class', 'form-group')
+
+const NAME_FORM_FILTER_LABEL = NAME_FORM_FILTER
+  .append('label')
+    .attr('for', 'name-filter-input')
+    .html("Filter names")
+
+const NAME_FORM_FILTER_INPUT = NAME_FORM_FILTER
+  .append("input")
+    .attr("id", "name-filter-input")
+    .attr('class', 'form-control')
+    .attr("type", "text")
+    .attr("placeholder", "Start writing a name...")
+    .on("keyup", filterSelectorNames)
+
+// Select Name From
+const NAME_FORM_SELECTOR = NAME_FORM
+  .append('div')
+    .attr('class', 'form-group')
+
+const NAME_FORM_SELECTOR_LABEL = NAME_FORM_SELECTOR
+  .append('label')
+    .attr('for', 'name-selector-select')
+    .html("Author:")
+
+const NAME_FORM_SELECTOR_SELECT = NAME_FORM_SELECTOR
   .append("select")
-    .attr('id', 'name-selector')
-    .attr('class', 'select')
+    .attr('class', 'form-control')
+    .attr('size', '5')
+    .on('change', selectName)
+
+
+// Degrees
+const DEGREE_SECTION = APP_INPUTS
+  .append('div')
+
+DEGREE_SECTION
+  .append(TITLES_TAG)
+    .html("Choose the degree of separation on the collaboration graph")
+    .append('small')
+      .html('<br/>'
+          + '"' + DEGREE_PARAMS.nopathStr + '"'
+          + ' restricts results to authors that cannot be connected '
+          + ' the collaboration graph')
+
+const DEGREE_FORM = DEGREE_SECTION
+  .append('form')
+
+
+// Select Degree Form
+const DEGREE_FORM_SELECTOR = DEGREE_FORM
+  .append('div')
+    .attr('class', 'form-group')
+
+const DEGREE_FORM_SELECTOR_LABEL = DEGREE_FORM_SELECTOR
+  .append("label")
+    .attr('for', 'degree-selector-select')
+    .html("Degrees")
+
+const DEGREE_FORM_SELECTOR_SELECT = DEGREE_FORM_SELECTOR
+  .append("select")
+    .attr('class', 'form-control')
     .attr('size', '5')
     .on('change', selectDegree)
 
@@ -109,9 +154,8 @@ const DEGREE_SELECTOR = APP_INPUTS
 // ----------------------
 const OUTPUT_TEXT_DIV = APP_OUTPUTS
   .append("div")
-    .attr("id", "output-text-div")
 
-const OUTPUT_TABLE_DIV= APP_OUTPUTS
+const OUTPUT_TABLE_DIV = APP_OUTPUTS
   .append("div")
     .attr("id", "output-table-div")
 
@@ -121,7 +165,6 @@ const OUTPUT_TABLE_DIV= APP_OUTPUTS
 // ------------------------------------
 function update() {
   let params = getInputParameters()
-  console.log("params: ", params);
   updateInputs(params)
   updateOutputs(params)
 }
@@ -131,9 +174,9 @@ function getInputParameters() {
   // Makes an object from all expected user inputs
   //
   return {
-    'nameFilter':  NAME_FILTER.property('value'),
-    'nameSelection': NAME_SELECTOR.property('value'),
-    'degreeSelection': formatDegree(DEGREE_SELECTOR.property('value'))
+    'nameFilter':  NAME_FORM_FILTER_INPUT.property('value'),
+    'nameSelection': NAME_FORM_SELECTOR_SELECT.property('value'),
+    'degreeSelection': formatDegree(DEGREE_FORM_SELECTOR_SELECT.property('value'))
     // 'degreeSelection': 1000
   }
 }
@@ -172,10 +215,9 @@ function updateInputs(params) {
 
 function updateNameSelector(params) {
   if (nameCurrent === undefined || params.nameFilter !== nameCurrentFilter) {
-    console.log("update name list");
     nameCurrent = params.nameSelection
     nameCurrentFilter = params.nameFilter
-    updateSelector(NAME_SELECTOR,
+    updateSelector(NAME_FORM_SELECTOR_SELECT,
       AUTHOR_NAMES
         .filter(x => x.toLowerCase()
           .includes(params.nameFilter.toLowerCase()) ))
@@ -185,7 +227,7 @@ function updateNameSelector(params) {
 function updateDegreeSelector(params) {
   if (degreeCurrent === undefined) {
     degreeCurrent = params.degreeSelection
-    updateSelector(DEGREE_SELECTOR, DEGREE_LIST)
+    updateSelector(DEGREE_FORM_SELECTOR_SELECT, DEGREE_LIST)
   }
 }
 
@@ -206,13 +248,14 @@ function updateSelector(selector, list) {
 function updateOutputs(params) {
   updateOutputTextName(params)
   updateTopTable(params)
+  updateAppOutputs(params)
 }
 
 function updateOutputTextName(params) {
-  removeTagFromDom('h6', OUTPUT_TEXT_DIV)
+  removeTagFromDom(TITLES_TAG, OUTPUT_TEXT_DIV)
   if (!params.nameSelection || !params.nameSelection.length) return null
   OUTPUT_TEXT_DIV
-    .append('h6')
+    .append(TITLES_TAG)
       .html(""
         + "Top " + TOP_AUTHORS + " results for <b>"
         + "<b>" + params.nameSelection + "</b>"
@@ -285,5 +328,15 @@ function tabulateDataColumnsDomId(data, columns, domId) {
   return table;
 }
 
-// -------------------
+function updateAppOutputs(params) {
+  APP_OUTPUTS
+    .attr('class',
+          (!params.nameSelection || !params.nameSelection.length)
+          ? ''
+          : 'jumbotron')
+}
+
+// ------
+// Init
+// ------
 update()
