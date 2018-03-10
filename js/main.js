@@ -1,8 +1,8 @@
+// ---------------------------------
+// Application Data
+// ---------------------------------
 const BACKSPACE_KEY = 8;
 const TOP_AUTHORS = 10
-
-const APP_CONTAINER = d3.select("#app-container")
-
 const AUTHOR_NAMES = ",SYLVAIN M MUKENGE,ANNA GANDAGLIA,DAVIDE LAZZERONI,GABRIELLA DI GIOVINE"
   .split(',')
   // .filter(x => x && x.length)
@@ -21,28 +21,60 @@ const AUTHOR_DEGREES = [
   "GABRIELLA DI GIOVINE,1000,1000,1000,0"
 ].map(x => x.split(','))
 
-const NAME_FILTER = APP_CONTAINER
+
+// ---------------------------------
+// DOM Structure
+// ---------------------------------
+const HEADER_STR = "HSR Collaborations 2018"
+const APP_OWNER = "Babbonatale"
+const FOOTER_STR = "&copy Copy-paste"
+
+const APP_BODY = d3.select('body')
+const APP_CONTAINER = APP_BODY
+  .append('div')
+    .attr('class', 'container')
+    .attr('id', 'app-container')
+
+const APP_HEADER = APP_CONTAINER
+  .append('h1')
+    .html(HEADER_STR)
+    .append('small')
+      .html(" by " + APP_OWNER)
+
+const APP_INPUTS = APP_CONTAINER
+  .append("div")
+    .attr("id", "input-div")
+    // .attr("class", "")
+
+const APP_OUTPUTS = APP_CONTAINER
+  .append("div")
+    .attr("id", "output-div")
+    .attr("class", "")
+
+const APP_FOOTER = APP_CONTAINER
+  .append('div')
+    // .attr('class', 'footer')
+    .append('p')
+      .html('&copy Copy-paste')
+
+
+// ----------------------
+// App Inputs
+// ----------------------
+const NAME_FILTER = APP_INPUTS
   .append("input")
     .attr("id", "coordinates")
     .attr("type", "text")
     .attr("placeholder", "Start writing a name...")
     .on("keyup", filterSelectorNames)
 
-// ----------------------
-// Input Div
-// ----------------------
-const DIV_INPUTS = APP_CONTAINER
-  .append("div")
-    .attr("id", "input-div")
-    .attr("class", "")
-
-const NAME_TEXT = DIV_INPUTS
+const NAME_TEXT = APP_INPUTS
   .append("p")
     .attr("id", "name-text")
     .attr("class", "")
     .text("Choose an author from the list (hint: you can use the text field to search faster)")
 
-const NAME_SELECTOR = DIV_INPUTS
+const NAME_SELECTOR = APP_INPUTS
   .append("select")
     .attr('id', 'name-selector')
     .attr('class', 'select')
@@ -60,13 +92,13 @@ const DEGREE_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
 
-const DEGREE_TEXT = DIV_INPUTS
+const DEGREE_TEXT = APP_INPUTS
   .append("p")
     .attr("id", "degree-text")
     .attr("class", "")
     .html("Select a degree of separation on the collaboration graph. No path restricts results to authors that cannot be connected on the collaboration graph")
 
-const DEGREE_SELECTOR = DIV_INPUTS
+const DEGREE_SELECTOR = APP_INPUTS
   .append("select")
     .attr('id', 'name-selector')
     .attr('class', 'select')
@@ -74,26 +106,21 @@ const DEGREE_SELECTOR = DIV_INPUTS
     .on('change', selectDegree)
 
 // ----------------------
-// Output Div
+// App Outputs
 // ----------------------
-const DIV_OUTPUTS = APP_CONTAINER
-  .append("div")
-    .attr("id", "output-div")
-    .attr("class", "")
-
-const OUTPUT_TEXT_DIV = DIV_OUTPUTS
+const OUTPUT_TEXT_DIV = APP_OUTPUTS
   .append("div")
     .attr("id", "output-text-div")
     .attr("class", "")
 
-const OUTPUT_TABLE_DIV= DIV_OUTPUTS
+const OUTPUT_TABLE_DIV= APP_OUTPUTS
   .append("div")
     .attr("id", "output-table-div")
     .attr("class", "")
 
 
 // ------------------------------------
-// Init / Update / General Functions
+// Update / General Functions
 // ------------------------------------
 function update() {
   let params = getInputParameters()
