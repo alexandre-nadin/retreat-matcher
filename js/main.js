@@ -183,8 +183,9 @@ function formatDegree(degree) {
 
 function getDegreeString(degree) {
   if (!degree) return ""
-  if (degree === DEGREE_PARAMS.nopathValue) degree = DEGREE_PARAMS.nopathStr
-  return  " (>= " + degree + " sep. degrees)"
+  return (degree === DEGREE_PARAMS.nopathValue)
+    ? " (no sep. degree)"
+    : " (>= " + degree + " sep. degrees)"
 }
 
 function removeTagFromDom(tag, dom) {
