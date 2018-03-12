@@ -3,7 +3,6 @@
 // ---------------------------------
 const BACKSPACE_KEY = 8;
 const TITLES_TAG = 'h4'
-const TOP_AUTHORS = 10
 
 const AUTHOR_DATA = {
   names: undefined,
@@ -14,7 +13,7 @@ const AUTHOR_DATA = {
   tableOutput: {
     columns: ['Author', 'Similarity'],
     sortAscendingSimilarity: true,
-    topNuber: 10
+    topNumber: 10
   }
 }
 
@@ -254,7 +253,7 @@ function updateOutputTextName(params) {
   OUTPUT_TEXT_DIV
     .append(TITLES_TAG)
       .html(""
-        + "Top " + AUTHOR_DATA.tableOutput.top + " results for <b>"
+        + "Top " + AUTHOR_DATA.tableOutput.topNumber + " results for <b>"
         + "<b>" + params.nameSelection + "</b>"
         + "<br/><small> authors ranked by similarity of topics in presented abstracts "
         + getDegreeString(params.degreeSelection)
@@ -290,12 +289,13 @@ function updateTopTable(params) {
    || (x.Degree != DEGREE_PARAMS.nopathValue
         && x.Degree >= params.degreeSelection)
     )
-
+    // Ascending sort onsimilarity
     .sort((first, second) =>
       AUTHOR_DATA.tableOutput.sortAscendingSimilarity
         ? second.Similarity - first.Similarity
         : first.Similarity - second.Similarity
     )
+    .slice(0, AUTHOR_DATA.tableOutput.topNumber)
 
   if (!tableData.length) return;
   tabulateDataColumnsDomId(
