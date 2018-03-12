@@ -13,7 +13,8 @@ const AUTHOR_DATA = {
   degrees: undefined,
   tableOutput: {
     columns: ['Author', 'Similarity'],
-    sortAscendingSimilarity: true
+    sortAscendingSimilarity: true,
+    topNuber: 10
   }
 }
 
@@ -253,7 +254,7 @@ function updateOutputTextName(params) {
   OUTPUT_TEXT_DIV
     .append(TITLES_TAG)
       .html(""
-        + "Top " + TOP_AUTHORS + " results for <b>"
+        + "Top " + AUTHOR_DATA.tableOutput.top + " results for <b>"
         + "<b>" + params.nameSelection + "</b>"
         + "<br/><small> authors ranked by similarity of topics in presented abstracts "
         + getDegreeString(params.degreeSelection)
@@ -283,6 +284,11 @@ function updateTopTable(params) {
       }
     })
     .filter(x => x.Degree == params.degreeSelection)
+    .sort((first, second) =>
+      AUTHOR_DATA.tableOutput.sortAscendingSimilarity
+        ? second.Similarity - first.Similarity
+        : first.Similarity - second.Similarity
+    )
 
   if (!tableData.length) return;
   tabulateDataColumnsDomId(
