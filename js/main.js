@@ -3,14 +3,18 @@
 // ---------------------------------
 const BACKSPACE_KEY = 8;
 const TITLES_TAG = 'h4'
-const TOP_AUTHORS = 10
 
 const AUTHOR_DATA = {
   names: undefined,
   similarities: undefined,
   similaritiesUrl: 'data/Author_Similarity.csv',
   degreesUrl: 'data/Path_len.csv',
-  degrees: undefined
+  degrees: undefined,
+  tableOutput: {
+    columns: ['Author', 'Similarity'],
+    sortAscendingSimilarity: true,
+    topNumber: 10
+  }
 }
 
 const DEGREE_PARAMS = {
@@ -28,7 +32,7 @@ const DEGREE_LIST = Array
 // DOM Structure
 // ---------------------------------
 const HEADER_STR = "Collaborators HSR2018"
-const APP_OWNER = "Babbonatale"
+const APP_OWNER = "CTGB lab"
 const FOOTER_STR = "&copy Copy-paste"
 
 const APP_BODY = d3.select('body')
@@ -112,12 +116,12 @@ const DEGREE_SECTION = APP_INPUTS
 
 DEGREE_SECTION
   .append(TITLES_TAG)
-    .html("Choose the degree of separation on the collaboration graph")
+    .html("Choose the minimum degree of separation on the collaboration graph")
     .append('small')
       .html('<br/>'
           + '"' + DEGREE_PARAMS.nopathStr + '"'
-          + ' restricts results to authors that cannot be connected '
-          + ' the collaboration graph')
+          + ' restricts the results to authors that cannot be connected '
+          + ' in the collaboration graph')
 
 const DEGREE_FORM = DEGREE_SECTION
   .append('form')
@@ -180,7 +184,7 @@ function formatDegree(degree) {
 function getDegreeString(degree) {
   if (!degree) return ""
   if (degree === DEGREE_PARAMS.nopathValue) degree = DEGREE_PARAMS.nopathStr
-  return  " (" + degree + " sep. degrees)"
+  return  " (>= " + degree + " sep. degrees)"
 }
 
 function removeTagFromDom(tag, dom) {
@@ -249,7 +253,7 @@ function updateOutputTextName(params) {
   OUTPUT_TEXT_DIV
     .append(TITLES_TAG)
       .html(""
-        + "Top " + TOP_AUTHORS + " results for <b>"
+        + "Top " + AUTHOR_DATA.tableOutput.topNumber + " results for <b>"
         + "<b>" + params.nameSelection + "</b>"
         + "<br/><small> authors ranked by similarity of topics in presented abstracts "
         + getDegreeString(params.degreeSelection)
@@ -270,17 +274,33 @@ function updateTopTable(params) {
     // Filter the degrees here
     .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
-    .map(d => { return {
-       'Author': d[0],
-       'Score': AUTHOR_DATA.similarities
-         .find(s => s[0] == d[0])[authorIdx],
-       'Degree': d[authorIdx]} ; })
-    .filter(x => x.Degree == params.degreeSelection)
+    .map(
+      d => { return {
+        'Author': d[0],
+        'Similarity': AUTHOR_DATA.similarities
+          .find(s => s[0] == d[0])[authorIdx],
+        'Degree': d[authorIdx]
+      }
+    })
+    // Get minimum degrees
+    .filter(x =>
+      (x.Degree == DEGREE_PARAMS.nopathValue
+        && params.degreeSelection == DEGREE_PARAMS.nopathValue)
+   || (x.Degree != DEGREE_PARAMS.nopathValue
+        && x.Degree >= params.degreeSelection)
+    )
+    // Ascending sort onsimilarity
+    .sort((first, second) =>
+      AUTHOR_DATA.tableOutput.sortAscendingSimilarity
+        ? second.Similarity - first.Similarity
+        : first.Similarity - second.Similarity
+    )
+    .slice(0, AUTHOR_DATA.tableOutput.topNumber)
 
   if (!tableData.length) return;
   tabulateDataColumnsDomId(
     tableData,
-    Object.keys(tableData[0]),
+    AUTHOR_DATA.tableOutput.columns,
     OUTPUT_TABLE_DIV
   )
 }
