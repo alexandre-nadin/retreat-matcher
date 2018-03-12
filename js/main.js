@@ -288,7 +288,9 @@ function updateTopTable(params) {
 function tabulateDataColumnsDomId(data, columns, domId) {
   let table = domId
     .append('table')
-    .attr('class', 'table table-bordered')
+    .attr('class', 'table table-striped table-bordered')
+    .attr('width', '100%')
+    .attr('cellspacing', '0')
 
   let thead = table.append('thead')
   let	tbody = table.append('tbody');
