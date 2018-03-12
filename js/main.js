@@ -32,7 +32,7 @@ const DEGREE_LIST = Array
 // DOM Structure
 // ---------------------------------
 const HEADER_STR = "Collaborators HSR2018"
-const APP_OWNER = "Babbonatale"
+const APP_OWNER = "CTGB lab"
 const FOOTER_STR = "&copy Copy-paste"
 
 const APP_BODY = d3.select('body')
