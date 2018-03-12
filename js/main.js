@@ -4,23 +4,14 @@
 const BACKSPACE_KEY = 8;
 const TITLES_TAG = 'h4'
 const TOP_AUTHORS = 10
-const AUTHOR_NAMES = ",SYLVAIN M MUKENGE,ANNA GANDAGLIA,DAVIDE LAZZERONI,GABRIELLA DI GIOVINE"
-  .split(',')
-  // .filter(x => x && x.length)
 
-const AUTHOR_SIMILARITIES = [
-  "SYLVAIN M MUKENGE,1.0,0.5067098125585289,0.6479705859654777,0.5057978857342632",
-  "ANNA GANDAGLIA,0.5067098125585289,1.0,0.5983803473561269,0.5031240507516532",
-  "DAVIDE LAZZERONI,0.6479705859654777,0.5983803473561269,1.0,0.5029147075370226",
-  "GABRIELLA DI GIOVINE,0.5057978857342632,0.5031240507516532,0.5029147075370226,1.0"
-].map(x => x.split(','))
-
-const AUTHOR_DEGREES = [
-  "SYLVAIN M MUKENGE,0,4,6,1000",
-  "ANNA GANDAGLIA,4,0,6,1000",
-  "DAVIDE LAZZERONI,6,6,0,1000",
-  "GABRIELLA DI GIOVINE,1000,1000,1000,0"
-].map(x => x.split(','))
+const AUTHOR_DATA = {
+  names: undefined,
+  similarities: undefined,
+  similaritiesUrl: 'data/Author_Similarity.csv',
+  degreesUrl: 'data/Path_len.csv',
+  degrees: undefined
+}
 
 const DEGREE_PARAMS = {
   'defaultValue': 3,
@@ -32,7 +23,6 @@ const DEGREE_PARAMS = {
 const DEGREE_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
-
 
 // ---------------------------------
 // DOM Structure
@@ -218,9 +208,11 @@ function updateNameSelector(params) {
     nameCurrent = params.nameSelection
     nameCurrentFilter = params.nameFilter
     updateSelector(NAME_FORM_SELECTOR_SELECT,
-      AUTHOR_NAMES
+      AUTHOR_DATA.names
         .filter(x => x.toLowerCase()
-          .includes(params.nameFilter.toLowerCase()) ))
+          .includes(params.nameFilter.toLowerCase()))
+        .sort()
+    )
   }
 }
 
@@ -273,15 +265,15 @@ function updateTopTable(params) {
   //
   removeTagFromDom('table', OUTPUT_TABLE_DIV)
   if (!params.nameSelection) return null
-  let authorIdx = AUTHOR_NAMES.indexOf(params.nameSelection)
-  let tableData = AUTHOR_DEGREES
+  let authorIdx = AUTHOR_DATA.names.indexOf(params.nameSelection)
+  let tableData = AUTHOR_DATA.degrees
     // Filter the degrees here
     .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
     .map(d => { return {
        'Author': d[0],
-       'Score': AUTHOR_SIMILARITIES
-         .find(s => s[0] === d[0])[authorIdx],
+       'Score': AUTHOR_DATA.similarities
+         .find(s => s[0] == d[0])[authorIdx],
        'Degree': d[authorIdx]} ; })
     .filter(x => x.Degree == params.degreeSelection)
 
@@ -339,4 +331,17 @@ function updateAppOutputs(params) {
 // ------
 // Init
 // ------
-update()
+d3.queue()
+  .defer(d3.text, AUTHOR_DATA.similaritiesUrl)
+  .defer(d3.text, AUTHOR_DATA.degreesUrl)
+  .await(analyze);
+
+function analyze(error, similarities, degrees) {
+  if(error) { console.log(error); }
+  // Get names, similarities and degrees
+  let dataSimilarities = d3.csvParseRows(similarities)
+  AUTHOR_DATA.names = dataSimilarities[0]
+  AUTHOR_DATA.similarities = dataSimilarities.slice(1)
+  AUTHOR_DATA.degrees = d3.csvParseRows(degrees).slice(1)
+  update()
+}
