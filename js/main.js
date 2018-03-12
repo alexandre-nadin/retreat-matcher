@@ -117,12 +117,12 @@ const DEGREE_SECTION = APP_INPUTS
 
 DEGREE_SECTION
   .append(TITLES_TAG)
-    .html("Choose the degree of separation on the collaboration graph")
+    .html("Choose the minimum degree of separation on the collaboration graph")
     .append('small')
       .html('<br/>'
           + '"' + DEGREE_PARAMS.nopathStr + '"'
-          + ' restricts results to authors that cannot be connected '
-          + ' the collaboration graph')
+          + ' restricts the results to authors that cannot be connected '
+          + ' in the collaboration graph')
 
 const DEGREE_FORM = DEGREE_SECTION
   .append('form')
@@ -185,7 +185,7 @@ function formatDegree(degree) {
 function getDegreeString(degree) {
   if (!degree) return ""
   if (degree === DEGREE_PARAMS.nopathValue) degree = DEGREE_PARAMS.nopathStr
-  return  " (" + degree + " sep. degrees)"
+  return  " (>= " + degree + " sep. degrees)"
 }
 
 function removeTagFromDom(tag, dom) {
@@ -283,7 +283,14 @@ function updateTopTable(params) {
         'Degree': d[authorIdx]
       }
     })
-    .filter(x => x.Degree == params.degreeSelection)
+    // Get minimum degrees
+    .filter(x =>
+      (x.Degree == DEGREE_PARAMS.nopathValue
+        && params.degreeSelection == DEGREE_PARAMS.nopathValue)
+   || (x.Degree != DEGREE_PARAMS.nopathValue
+        && x.Degree >= params.degreeSelection)
+    )
+
     .sort((first, second) =>
       AUTHOR_DATA.tableOutput.sortAscendingSimilarity
         ? second.Similarity - first.Similarity
