@@ -11,7 +11,10 @@ const AUTHOR_DATA = {
   similaritiesUrl: 'data/Author_Similarity.csv',
   degreesUrl: 'data/Path_len.csv',
   degrees: undefined,
-  tableColDisplayed: ['Author', 'Similarity']
+  tableOutput: {
+    columns: ['Author', 'Similarity'],
+    sortAscendingSimilarity: true
+  }
 }
 
 const DEGREE_PARAMS = {
@@ -284,7 +287,7 @@ function updateTopTable(params) {
   if (!tableData.length) return;
   tabulateDataColumnsDomId(
     tableData,
-    AUTHOR_DATA.tableColDisplayed,
+    AUTHOR_DATA.tableOutput.columns,
     OUTPUT_TABLE_DIV
   )
 }
