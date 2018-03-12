@@ -10,7 +10,8 @@ const AUTHOR_DATA = {
   similarities: undefined,
   similaritiesUrl: 'data/Author_Similarity.csv',
   degreesUrl: 'data/Path_len.csv',
-  degrees: undefined
+  degrees: undefined,
+  tableColDisplayed: ['Author', 'Similarity']
 }
 
 const DEGREE_PARAMS = {
@@ -270,17 +271,20 @@ function updateTopTable(params) {
     // Filter the degrees here
     .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
-    .map(d => { return {
-       'Author': d[0],
-       'Score': AUTHOR_DATA.similarities
-         .find(s => s[0] == d[0])[authorIdx],
-       'Degree': d[authorIdx]} ; })
+    .map(
+      d => { return {
+        'Author': d[0],
+        'Similarity': AUTHOR_DATA.similarities
+          .find(s => s[0] == d[0])[authorIdx],
+        'Degree': d[authorIdx]
+      }
+    })
     .filter(x => x.Degree == params.degreeSelection)
 
   if (!tableData.length) return;
   tabulateDataColumnsDomId(
     tableData,
-    Object.keys(tableData[0]),
+    AUTHOR_DATA.tableColDisplayed,
     OUTPUT_TABLE_DIV
   )
 }
