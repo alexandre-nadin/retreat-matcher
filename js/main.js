@@ -294,13 +294,8 @@ function updateTopTable(params) {
       }
     })
     // Get minimum degrees
-    .filter(x =>
-      (x.Degree == DEGREE_PARAMS.nopathValue
-        && params.degreeSelection == DEGREE_PARAMS.nopathValue)
-   || (x.Degree != DEGREE_PARAMS.nopathValue
-        && x.Degree >= params.degreeSelection)
-    )
-    // Ascending sort onsimilarity
+    .filter(x => x.Degree >= params.degreeSelection)
+    // Ascending sort on similarity
     .sort((first, second) =>
       AUTHOR_DATA.tableOutput.sortAscendingSimilarity
         ? second.Similarity - first.Similarity
@@ -319,7 +314,7 @@ function updateTopTable(params) {
 function tabulateDataColumnsDomId(data, columns, domId) {
   let table = domId
     .append('table')
-    .attr('class', 'table table-striped table-bordered')
+    .attr('class', 'table table-striped table-bordered table-responsive table-hover')
     .attr('width', '100%')
     .attr('cellspacing', '0')
 
