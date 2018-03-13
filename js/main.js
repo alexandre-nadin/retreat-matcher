@@ -48,6 +48,7 @@ const DEGREE_SELECTOR_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
 
+
 // ---------------------------------
 // DOM Structure
 // ---------------------------------
@@ -79,10 +80,10 @@ const APP_FOOTER = APP_CONTAINER
     .append('p')
       .html(APP_DATA.copyRights)
 
+
 // ----------------------
 // App Inputs
 // ----------------------
-
 // Names
 const NAME_SECTION = APP_INPUTS
   .append('div')
@@ -162,6 +163,7 @@ const DEGREE_FORM_SELECTOR_SELECT = DEGREE_FORM_SELECTOR
     .attr('size', '5')
     .on('change', selectDegree)
 
+
 // ----------------------
 // App Outputs
 // ----------------------
@@ -209,6 +211,7 @@ function removeTagFromDom(tag, dom) {
   dom.selectAll(tag).remove()
   return dom
 }
+
 
 // -----------------
 // Input Functions
@@ -368,6 +371,7 @@ function updateAppOutputs(params) {
           ? ''
           : 'jumbotron')
 }
+
 
 // ------
 // Init
