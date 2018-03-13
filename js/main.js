@@ -262,7 +262,9 @@ function updateSelector(selector, list, defaultIndex=0) {
     .enter()
     .append('option')
       .attr('selected', (d, i) => i===defaultIndex ? 'selected' : null)
-      .text(x => x)
+      .on('mouseover', function(d, i) { d3.select(this).style('background', '#E8E8E8')} )
+      .on('mouseout', function (d, i) { d3.select(this).style('background', 'white') })
+      .text(x => x);
   return selector
 }
 
