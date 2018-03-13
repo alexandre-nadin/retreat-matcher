@@ -4,7 +4,7 @@
 const APP_DATA = {
   yearStart: "2018",
   yearEnd: "2018",
-  title: () => { return "HSR Retreat Collaborations " + APP_DATA.yearEnd },
+  title: () => { return "[test loading] HSR Retreat Collaborations " + APP_DATA.yearEnd },
   owner: "CTGB",
   copyRights: () =>  { return "&copy "
     + APP_DATA.yearStart
@@ -362,7 +362,10 @@ function tabulateDataColumnsDomId(data, columns, domId) {
     })
     .enter()
     .append('td')
-      .text(x => x.value);
+      // .text(x => x.value);
+      .text(x => isNaN(x.value)
+        ? x.value
+        : parseFloat(x.value).toFixed(AUTHOR_DATA.similarities.roundDecimal))
 
   return table;
 }
@@ -391,10 +394,10 @@ function analyze(error, similarities, degrees) {
   AUTHOR_DATA.names.list = dataSimilarities[0]
   AUTHOR_DATA.similarities.list = dataSimilarities
     .slice(1)
-    .map(x1 => x1.map(x2 =>
-      isNaN(x2)
-      ? x2
-      : parseFloat(x2).toFixed(AUTHOR_DATA.similarities.roundDecimal)))
+    // .map(x1 => x1.map(x2 =>
+    //   isNaN(x2)
+    //   ? x2
+    //   : parseFloat(x2).toFixed(AUTHOR_DATA.similarities.roundDecimal)))
   AUTHOR_DATA.degrees.list = d3.csvParseRows(degrees).slice(1)
   update()
 }
