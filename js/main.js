@@ -9,8 +9,11 @@ const AUTHOR_DATA = {
     list: undefined,
     defaultIndex: 0
   },
-  similarities: undefined,
-  similaritiesUrl: 'data/Author_Similarity.csv',
+  similarities: {
+    list: undefined,
+    url: 'data/Author_Similarity.csv',
+    roundDecimal: 3
+  },
   degrees: {
     url: 'data/Path_len.csv',
     list: undefined,
@@ -288,7 +291,7 @@ function updateTopTable(params) {
     .map(
       d => { return {
         'Author': d[0],
-        'Similarity': AUTHOR_DATA.similarities
+        'Similarity': AUTHOR_DATA.similarities.list
           .find(s => s[0] == d[0])[authorIdx],
         'Degree': d[authorIdx]
       }
@@ -360,7 +363,7 @@ function updateAppOutputs(params) {
 // Init
 // ------
 d3.queue()
-  .defer(d3.text, AUTHOR_DATA.similaritiesUrl)
+  .defer(d3.text, AUTHOR_DATA.similarities.url)
   .defer(d3.text, AUTHOR_DATA.degrees.url)
   .await(analyze);
 
@@ -369,7 +372,12 @@ function analyze(error, similarities, degrees) {
   // Get names, similarities and degrees
   let dataSimilarities = d3.csvParseRows(similarities)
   AUTHOR_DATA.names.list = dataSimilarities[0]
-  AUTHOR_DATA.similarities = dataSimilarities.slice(1)
+  AUTHOR_DATA.similarities.list = dataSimilarities
+    .slice(1)
+    .map(x1 => x1.map(x2 =>
+      isNaN(x2)
+      ? x2
+      : parseFloat(x2).toFixed(AUTHOR_DATA.similarities.roundDecimal)))
   AUTHOR_DATA.degrees.list = d3.csvParseRows(degrees).slice(1)
   update()
 }
