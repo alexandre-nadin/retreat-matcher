@@ -1,8 +1,19 @@
 // ---------------------------------
 // Application Data
 // ---------------------------------
-const BACKSPACE_KEY = 8;
-const TITLES_TAG = 'h4'
+const APP_DATA = {
+  yearStart: "2018",
+  yearEnd: "2018",
+  title: () => { return "HSR Retreat Collaborations " + APP_DATA.yearEnd },
+  owner: "CTGB lab",
+  copyRights: () =>  { return "&copy "
+    + APP_DATA.yearStart
+    + (APP_DATA.yearStart===APP_DATA.yearEnd
+      ? ""
+      : "-" + APP_DATA.yearEnd)
+    + " by " + APP_DATA.owner },
+  titleTag: 'h4'
+}
 
 const AUTHOR_DATA = {
   names: {
@@ -40,20 +51,19 @@ const DEGREE_SELECTOR_LIST = Array
 // ---------------------------------
 // DOM Structure
 // ---------------------------------
-const HEADER_STR = "Collaborators HSR2018"
-const APP_OWNER = "CTGB lab"
-const FOOTER_STR = "&copy Copy-paste"
+//Set web page title
+d3.select('title').html(APP_DATA.title)
 
 const APP_BODY = d3.select('body')
+
 const APP_CONTAINER = APP_BODY
   .append('div')
     .attr('class', 'container')
 
 const APP_HEADER = APP_CONTAINER
   .append('h1')
-    .html(HEADER_STR)
-    .append('small')
-      .html(" by " + APP_OWNER)
+    .html(APP_DATA.title)
+
 
 const APP_INPUTS = APP_CONTAINER
   .append("div")
@@ -67,7 +77,7 @@ const APP_FOOTER = APP_CONTAINER
   .append('div')
     .attr('class', 'footer')
     .append('p')
-      .html('&copy Copy-paste')
+      .html(APP_DATA.copyRights)
 
 // ----------------------
 // App Inputs
@@ -78,7 +88,7 @@ const NAME_SECTION = APP_INPUTS
   .append('div')
 
 NAME_SECTION
-  .append(TITLES_TAG)
+  .append(APP_DATA.titleTag)
     .html("Choose an author of interest")
 
 const NAME_FORM = NAME_SECTION
@@ -124,7 +134,7 @@ const DEGREE_SECTION = APP_INPUTS
   .append('div')
 
 DEGREE_SECTION
-  .append(TITLES_TAG)
+  .append(APP_DATA.titleTag)
     .html("Choose the minimum degree of separation on the collaboration graph")
     .append('small')
       .html('<br/>'
@@ -262,10 +272,10 @@ function updateOutputs(params) {
 }
 
 function updateOutputTextName(params) {
-  removeTagFromDom(TITLES_TAG, OUTPUT_TEXT_DIV)
+  removeTagFromDom(APP_DATA.titleTag, OUTPUT_TEXT_DIV)
   if (!params.nameSelection || !params.nameSelection.length) return null
   OUTPUT_TEXT_DIV
-    .append(TITLES_TAG)
+    .append(APP_DATA.titleTag)
       .html(""
         + "Top " + AUTHOR_DATA.tableOutput.topNumber + " results for <b>"
         + "<b>" + params.nameSelection + "</b>"
