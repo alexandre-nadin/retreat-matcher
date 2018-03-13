@@ -5,13 +5,14 @@ const APP_DATA = {
   yearStart: "2018",
   yearEnd: "2018",
   title: () => { return "HSR Retreat Collaborations " + APP_DATA.yearEnd },
-  owner: "CTGB lab",
+  owner: "CTGB",
   copyRights: () =>  { return "&copy "
     + APP_DATA.yearStart
     + (APP_DATA.yearStart===APP_DATA.yearEnd
       ? ""
       : "-" + APP_DATA.yearEnd)
-    + " by " + APP_DATA.owner },
+    + " by " + APP_DATA.owner
+    + " - All Rights Reserved." },
   titleTag: 'h4'
 }
 
@@ -48,6 +49,7 @@ const DEGREE_SELECTOR_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
 
+
 // ---------------------------------
 // DOM Structure
 // ---------------------------------
@@ -79,10 +81,10 @@ const APP_FOOTER = APP_CONTAINER
     .append('p')
       .html(APP_DATA.copyRights)
 
+
 // ----------------------
 // App Inputs
 // ----------------------
-
 // Names
 const NAME_SECTION = APP_INPUTS
   .append('div')
@@ -162,6 +164,7 @@ const DEGREE_FORM_SELECTOR_SELECT = DEGREE_FORM_SELECTOR
     .attr('size', '5')
     .on('change', selectDegree)
 
+
 // ----------------------
 // App Outputs
 // ----------------------
@@ -209,6 +212,7 @@ function removeTagFromDom(tag, dom) {
   dom.selectAll(tag).remove()
   return dom
 }
+
 
 // -----------------
 // Input Functions
@@ -258,7 +262,9 @@ function updateSelector(selector, list, defaultIndex=0) {
     .enter()
     .append('option')
       .attr('selected', (d, i) => i===defaultIndex ? 'selected' : null)
-      .text(x => x)
+      .on('mouseover', function(d, i) { d3.select(this).style('background', '#E8E8E8')} )
+      .on('mouseout', function (d, i) { d3.select(this).style('background', 'white') })
+      .text(x => x);
   return selector
 }
 
@@ -368,6 +374,7 @@ function updateAppOutputs(params) {
           ? ''
           : 'jumbotron')
 }
+
 
 // ------
 // Init
