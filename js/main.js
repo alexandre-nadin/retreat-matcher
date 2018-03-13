@@ -5,11 +5,17 @@ const BACKSPACE_KEY = 8;
 const TITLES_TAG = 'h4'
 
 const AUTHOR_DATA = {
-  names: undefined,
+  names: {
+    list: undefined,
+    defaultIndex: 0
+  },
   similarities: undefined,
   similaritiesUrl: 'data/Author_Similarity.csv',
-  degreesUrl: 'data/Path_len.csv',
-  degrees: undefined,
+  degrees: {
+    url: 'data/Path_len.csv',
+    list: undefined,
+    defaultIndex: 2
+  },
   tableOutput: {
     columns: ['Author', 'Similarity'],
     sortAscendingSimilarity: true,
@@ -24,7 +30,7 @@ const DEGREE_PARAMS = {
   'nopathStr': 'No path'
 }
 
-const DEGREE_LIST = Array
+const DEGREE_SELECTOR_LIST = Array
   .from(Array(10).keys()).map(x => ++x).map(String)
   .concat(['No path'])
 
@@ -158,9 +164,8 @@ const OUTPUT_TABLE_DIV = APP_OUTPUTS
 // Update / General Functions
 // ------------------------------------
 function update() {
-  let params = getInputParameters()
-  updateInputs(params)
-  updateOutputs(params)
+  updateInputs(getInputParameters())
+  updateOutputs(getInputParameters())
 }
 
 function getInputParameters() {
@@ -171,7 +176,6 @@ function getInputParameters() {
     'nameFilter':  NAME_FORM_FILTER_INPUT.property('value'),
     'nameSelection': NAME_FORM_SELECTOR_SELECT.property('value'),
     'degreeSelection': formatDegree(DEGREE_FORM_SELECTOR_SELECT.property('value'))
-    // 'degreeSelection': 1000
   }
 }
 
@@ -212,11 +216,13 @@ function updateNameSelector(params) {
   if (nameCurrent === undefined || params.nameFilter !== nameCurrentFilter) {
     nameCurrent = params.nameSelection
     nameCurrentFilter = params.nameFilter
-    updateSelector(NAME_FORM_SELECTOR_SELECT,
-      AUTHOR_DATA.names
-        .filter(x => x.toLowerCase()
+    updateSelector(
+      NAME_FORM_SELECTOR_SELECT,
+      AUTHOR_DATA.names.list
+        .filter(x => x && x.length && x.toLowerCase()
           .includes(params.nameFilter.toLowerCase()))
-        .sort()
+        .sort(),
+      AUTHOR_DATA.names.defaultIndex
     )
   }
 }
@@ -224,18 +230,22 @@ function updateNameSelector(params) {
 function updateDegreeSelector(params) {
   if (degreeCurrent === undefined) {
     degreeCurrent = params.degreeSelection
-    updateSelector(DEGREE_FORM_SELECTOR_SELECT, DEGREE_LIST)
+    updateSelector(
+      DEGREE_FORM_SELECTOR_SELECT,
+      DEGREE_SELECTOR_LIST,
+      AUTHOR_DATA.degrees.defaultIndex)
   }
 }
 
-function updateSelector(selector, list) {
+function updateSelector(selector, list, defaultIndex=0) {
   // Remove options and add new ones from list
   removeTagFromDom('option', selector)
   selector.selectAll('option')
     .data(list)
     .enter()
     .append('option')
-    .text(x => x)
+      .attr('selected', (d, i) => i===defaultIndex ? 'selected' : null)
+      .text(x => x)
   return selector
 }
 
@@ -270,8 +280,8 @@ function updateTopTable(params) {
   //
   removeTagFromDom('table', OUTPUT_TABLE_DIV)
   if (!params.nameSelection) return null
-  let authorIdx = AUTHOR_DATA.names.indexOf(params.nameSelection)
-  let tableData = AUTHOR_DATA.degrees
+  let authorIdx = AUTHOR_DATA.names.list.indexOf(params.nameSelection)
+  let tableData = AUTHOR_DATA.degrees.list
     // Filter the degrees here
     .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
@@ -356,15 +366,15 @@ function updateAppOutputs(params) {
 // ------
 d3.queue()
   .defer(d3.text, AUTHOR_DATA.similaritiesUrl)
-  .defer(d3.text, AUTHOR_DATA.degreesUrl)
+  .defer(d3.text, AUTHOR_DATA.degrees.url)
   .await(analyze);
 
 function analyze(error, similarities, degrees) {
   if(error) { console.log(error); }
   // Get names, similarities and degrees
   let dataSimilarities = d3.csvParseRows(similarities)
-  AUTHOR_DATA.names = dataSimilarities[0]
+  AUTHOR_DATA.names.list = dataSimilarities[0]
   AUTHOR_DATA.similarities = dataSimilarities.slice(1)
-  AUTHOR_DATA.degrees = d3.csvParseRows(degrees).slice(1)
+  AUTHOR_DATA.degrees.list = d3.csvParseRows(degrees).slice(1)
   update()
 }
