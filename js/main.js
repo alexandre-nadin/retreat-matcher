@@ -5,7 +5,7 @@ const APP_DATA = {
   yearStart: "2018",
   yearEnd: "2018",
   get title() { return "HSR Retreat Collaborations " + this.yearEnd },
-  owner: "CTGB",
+  owner: "Alexandre Nadin & Davide Cittaro",
   get copyRights()  { return "&copy "
     + this.yearStart
     + (this.yearStart===this.yearEnd
