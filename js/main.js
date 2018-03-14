@@ -4,14 +4,14 @@
 const APP_DATA = {
   yearStart: "2018",
   yearEnd: "2018",
-  title: () => { return "[test loading] HSR Retreat Collaborations " + APP_DATA.yearEnd },
+  get title() { return "[test loading] HSR Retreat Collaborations " + this.yearEnd },
   owner: "CTGB",
-  copyRights: () =>  { return "&copy "
-    + APP_DATA.yearStart
-    + (APP_DATA.yearStart===APP_DATA.yearEnd
+  get copyRights()  { return "&copy "
+    + this.yearStart
+    + (this.yearStart===this.yearEnd
       ? ""
-      : "-" + APP_DATA.yearEnd)
-    + " by " + APP_DATA.owner
+      : "-" + this.yearEnd)
+    + " by " + this.owner
     + " - All Rights Reserved." },
   titleTag: 'h4'
 }
