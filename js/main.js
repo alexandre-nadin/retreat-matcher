@@ -24,7 +24,7 @@ const AUTHOR_DATA = {
   similarities: {
     list: undefined,
     url: 'data/Author_Similarity.csv',
-    roundDecimal: 3
+    roundDecimals: 3
   },
   degrees: {
     url: 'data/Path_len.csv',
@@ -304,8 +304,7 @@ function updateTopTable(params) {
     // Filter the degrees here
     .filter(d => d[0] !== params.nameSelection)
     // Map the Similarity Scores
-    .map(
-      d => { return {
+    .map(d => { return {
         'Author': d[0],
         'Similarity': AUTHOR_DATA.similarities.list
           .find(s => s[0] == d[0])[authorIdx],
@@ -326,11 +325,12 @@ function updateTopTable(params) {
   tabulateDataColumnsDomId(
     tableData,
     AUTHOR_DATA.tableOutput.columns,
-    OUTPUT_TABLE_DIV
+    OUTPUT_TABLE_DIV,
+    AUTHOR_DATA.similarities.roundDecimals
   )
 }
 
-function tabulateDataColumnsDomId(data, columns, domId) {
+function tabulateDataColumnsDomId(data, columns, domId, roundDecimals=0) {
   let table = domId
     .append('table')
     .attr('class', 'table table-striped table-bordered table-responsive table-hover')
@@ -362,12 +362,19 @@ function tabulateDataColumnsDomId(data, columns, domId) {
     })
     .enter()
     .append('td')
-      // .text(x => x.value);
-      .text(x => isNaN(x.value)
-        ? x.value
-        : parseFloat(x.value).toFixed(AUTHOR_DATA.similarities.roundDecimal))
+      .text(x => roundDecimals>=1 ? roundFloat(x.value, roundDecimals) : x.value)
 
   return table;
+}
+
+function roundFloat(x, nbDecimal=2) {
+  //
+  // Rounds a variable to the specified number of decimal.
+  // If not a number, returns the variable.
+  //
+  return isNaN(x)
+    ? x
+    : parseFloat(x).toFixed(nbDecimal)
 }
 
 function updateAppOutputs(params) {
@@ -394,10 +401,7 @@ function analyze(error, similarities, degrees) {
   AUTHOR_DATA.names.list = dataSimilarities[0]
   AUTHOR_DATA.similarities.list = dataSimilarities
     .slice(1)
-    // .map(x1 => x1.map(x2 =>
-    //   isNaN(x2)
-    //   ? x2
-    //   : parseFloat(x2).toFixed(AUTHOR_DATA.similarities.roundDecimal)))
+
   AUTHOR_DATA.degrees.list = d3.csvParseRows(degrees).slice(1)
   update()
 }
