@@ -4,7 +4,7 @@
 const APP_DATA = {
   yearStart: "2018",
   yearEnd: "2018",
-  get title() { return "[test loading] HSR Retreat Collaborations " + this.yearEnd },
+  get title() { return "HSR Retreat Collaborations " + this.yearEnd },
   owner: "CTGB",
   get copyRights()  { return "&copy "
     + this.yearStart
